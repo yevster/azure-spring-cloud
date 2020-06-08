@@ -33,7 +33,7 @@ steps:
     RunAsPreJob: false
 
 - task: Bash@3
-  name: apply-azure-prep
+  name: apply_azure_prep
   displayName: Copy .prep directory into PiggyMetrics
   inputs:
     targetType: 'inline'
