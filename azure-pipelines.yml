@@ -1,0 +1,72 @@
+# Starter pipeline
+
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+name: Clone and Build from Github
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - create-instance.yml
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  
+- task: DownloadSecureFile@1
+  name: settings_xml
+  displayName: 'Download Maven Settings'
+  inputs:
+    secureFile: 'settings.xml'
+
+- task: AzureKeyVault@1
+  inputs:
+    azureSubscription: 'Microsoft Azure Internal Consumption(27d295d0-38d5-4279-a327-1539b02490e8)'
+    KeyVaultName: 'az-spr-cld-ppl-demo-kv'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+
+- task: Bash@3
+  name: copy_maven_settings
+  displayName: Transferring Maven settings to repository root
+  inputs:
+    targetType: 'inline'
+    script: |
+      mkdir ~/.m2
+      echo 'RabbitMQ Password (DO NOT actually do this): $(rabbitmq-password)'
+      echo 'Copying $(settings_xml.secureFilePath)'
+      cp -v -f $(settings_xml.secureFilePath) ~/.m2
+      echo Build Number: '$(Build.BuildId)'
+
+- task: Maven@3
+  inputs:
+    options: -Pazureartifacts,cloud
+    mavenPomFile: 'piggymetrics/pom.xml'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
+
+- task: CopyFiles@2
+  name: copyjars
+  displayName: Copy built artifacts to staging directory
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/target/*.jar'
+    flattenFolders: true
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'build'
+    publishLocation: 'Container'
