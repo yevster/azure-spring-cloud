@@ -33,6 +33,14 @@ steps:
     RunAsPreJob: false
 
 - task: Bash@3
+  name: Apply Azure Spring Cloud changes
+  displayName: Copy .prep directory into PiggyMetrics
+  inputs:
+    targetType: 'inline'
+    script: |
+      yes | cp -rf .prep/* .
+
+- task: Bash@3
   name: copy_maven_settings
   displayName: Transferring Maven settings to repository root
   inputs:
