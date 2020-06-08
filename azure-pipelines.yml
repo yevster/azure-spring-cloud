@@ -33,7 +33,7 @@ steps:
     RunAsPreJob: false
 
 - task: Bash@3
-  name: Apply Azure Spring Cloud changes
+  name: apply-azure-prep
   displayName: Copy .prep directory into PiggyMetrics
   inputs:
     targetType: 'inline'
