@@ -28,7 +28,7 @@ steps:
 - task: AzureKeyVault@1
   inputs:
     azureSubscription: 'Microsoft Azure Internal Consumption(27d295d0-38d5-4279-a327-1539b02490e8)'
-    KeyVaultName: 'az-spr-cld-ppl-demo-kv'
+    KeyVaultName: '$(keyvault.name)'
     SecretsFilter: '*'
     RunAsPreJob: false
 
