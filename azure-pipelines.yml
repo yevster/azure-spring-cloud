@@ -1,7 +1,7 @@
-# Starter pipeline
+# A pipeline to build a mono-repo of Spring Cloud microservice.
+# Includes the user of a secure `settings.xml` file to enable Azure Artifacts,
+# and downloading of secrets from Azure KeyVault.
 
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
 name: Build from GitHub
